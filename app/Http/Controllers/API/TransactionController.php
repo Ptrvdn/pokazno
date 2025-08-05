@@ -99,4 +99,25 @@ class TransactionController extends Controller
             ], 500);
         }
     }
+    public function search(Request $request)
+{
+    try {
+        $q = $request->input('q');
+
+        if (! is_numeric($q)) {
+            return response()->json([
+                'message' => 'Query must be a number (amount).'
+            ], 422);
+        }
+
+        $results = Transaction::where('amount', '>=', $q)->get();
+
+        return response()->json($results);
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Failed to search transactions',
+            'error'   => $e->getMessage(),
+        ], 500);
+    }
+}
 }

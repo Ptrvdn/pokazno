@@ -98,4 +98,19 @@ class AccountController extends Controller
             ], 500);
         }
     }
+    /**
+     * Dinamička ruta: sve transakcije za dati račun
+     */
+    public function transactions(Account $account)
+    {
+        try {
+            $transactions = $account->transactions; // relacija iz modela
+            return response()->json($transactions);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Failed to fetch transactions for account',
+                'error'   => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
