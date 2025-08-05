@@ -8,9 +8,7 @@ return Application::configure(basePath: dirname(__DIR__))
     // Registrujemo middleware i izuzimamo određene URI-je iz CSRF zaštite
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->validateCsrfTokens(except: [
-            'api/accounts/*',
-            'api/categories/*',
-            'api/transactions/*',
+            'api/*',
         ]);
     })
     // Routing konfiguracija
