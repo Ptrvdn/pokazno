@@ -14,18 +14,39 @@ class TransactionController extends \Illuminate\Routing\Controller
         // STORE / UPDATE / DESTROY zahtevaju autentifikaciju
         $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     }
-    public function index()
-    {
-        try {
-            $transactions = Transaction::all();
-            return response()->json($transactions);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Failed to fetch transactions',
-                'error'   => $e->getMessage(),
-            ], 500);
+    public function index(Request $request)
+{
+    try {
+        $perPage = $request->query('per_page', 15);
+        $page    = $request->query('page', 1);
+
+        $query = Transaction::query();
+
+        // Filtering examples:
+        if ($request->has('min_amount')) {
+            $query->where('amount', '>=', $request->query('min_amount'));
         }
+        if ($request->has('max_amount')) {
+            $query->where('amount', '<=', $request->query('max_amount'));
+        }
+        if ($request->has('date_from')) {
+            $query->where('transaction_date', '>=', $request->query('date_from'));
+        }
+        if ($request->has('date_to')) {
+            $query->where('transaction_date', '<=', $request->query('date_to'));
+        }
+
+        $transactions = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($transactions);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Failed to fetch transactions',
+            'error'   => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function store(Request $request)
     {

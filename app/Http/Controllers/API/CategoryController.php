@@ -15,18 +15,30 @@ class CategoryController extends \Illuminate\Routing\Controller
         // STORE / UPDATE / DESTROY zahtevaju autentifikaciju
         $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     }
-    public function index()
-    {
-        try {
-            $categories = Category::all();
-            return response()->json($categories);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Failed to fetch categories',
-                'error'   => $e->getMessage(),
-            ], 500);
+    public function index(Request $request)
+{
+    try {
+        $perPage = $request->query('per_page', 15);
+        $page    = $request->query('page', 1);
+
+        $query = Category::query();
+
+        // Filter by type (income|expense)
+        if ($request->has('type')) {
+            $query->where('type', $request->query('type'));
         }
+
+        $categories = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($categories);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Failed to fetch categories',
+            'error'   => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function store(Request $request)
     {

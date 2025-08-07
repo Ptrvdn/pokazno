@@ -14,18 +14,31 @@ class AccountController extends \Illuminate\Routing\Controller
         // STORE / UPDATE / DESTROY zahtevaju autentifikaciju
         $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     }
-    public function index()
-    {
-        try {
-            $accounts = Account::all();
-            return response()->json($accounts);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Failed to fetch accounts',
-                'error'   => $e->getMessage(),
-            ], 500);
+    public function index(Request $request)
+{
+    try {
+        // Pagination params
+        $perPage = $request->query('per_page', 15);    // default 15
+        $page    = $request->query('page', 1);
+
+        // Optional filtering by user_id
+        $query = Account::query();
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->query('user_id'));
         }
+
+        // Execute paginated query
+        $accounts = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($accounts);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Failed to fetch accounts',
+            'error'   => $e->getMessage(),
+        ], 500);
     }
+}
 
     public function store(Request $request)
     {
