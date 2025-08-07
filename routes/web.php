@@ -15,7 +15,11 @@ Route::prefix('api')->group(function () {
     Route::post('logout',   [AuthController::class,'logout'])
          ->middleware('auth:sanctum')
          ->name('api.logout');
-         
+         Route::post('password/forgot', [AuthController::class,'forgotPassword'])
+     ->name('password.forgot');
+Route::post('password/reset',  [AuthController::class,'resetPassword'])
+     ->name('password.reset');
+     
     // 1) Resource rute
     Route::apiResource('accounts',    AccountController::class);
     Route::apiResource('categories',  CategoryController::class);
