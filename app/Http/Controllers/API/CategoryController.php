@@ -8,8 +8,13 @@ use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
-class CategoryController extends Controller
+class CategoryController extends \Illuminate\Routing\Controller
 {
+    public function __construct()
+    {
+        // STORE / UPDATE / DESTROY zahtevaju autentifikaciju
+        $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
+    }
     public function index()
     {
         try {
