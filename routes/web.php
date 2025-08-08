@@ -38,6 +38,23 @@ Route::prefix('api')->group(function () {
 
      Route::post('upload', [UploadController::class, 'storeSimple']);
 
+     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+        Route::get('admin/dashboard', function () {
+            return response()->json(['message' => 'Welcome Admin']);
+        });
+    });
+
+    Route::middleware(['auth:sanctum', 'role:user'])->group(function () {
+        Route::get('user/dashboard', function () {
+            return response()->json(['message' => 'Welcome User']);
+        });
+    });
+
+    // primer za goste - bez autentifikacije
+    Route::get('guest/info', function () {
+        return response()->json(['message' => 'Hello Guest']);
+    });
+
      // 4) Fallback ruta za sve neuhvaćene /api URI-je
      Route::fallback(function () {
           return response()->json(['message' => 'Not Found'], 404);

@@ -17,40 +17,42 @@ class AuthController extends Controller
      * Registracija korisnika.
      */
     public function register(Request $request)
-    {
-        try {
-            $data = $request->validate([
-                'name'                  => 'required|string|max:255',
-                'email'                 => 'required|email|unique:users,email',
-                'password'              => 'required|string|min:8|confirmed',
-            ]);
+{
+    try {
+        $data = $request->validate([
+            'name'                  => 'required|string|max:255',
+            'email'                 => 'required|email|unique:users,email',
+            'password'              => 'required|string|min:8|confirmed',
+            'role'                  => 'nullable|string|in:user,admin,guest', // Dozvoljene uloge
+        ]);
 
-            $user = User::create([
-                'name'     => $data['name'],
-                'email'    => $data['email'],
-                'password' => bcrypt($data['password']),
-            ]);
+        $user = User::create([
+            'name'     => $data['name'],
+            'email'    => $data['email'],
+            'password' => bcrypt($data['password']),
+            'role'     => $data['role'] ?? 'user', // Default ako nije prosleđeno
+        ]);
 
-            $token = $user->createToken('api-token')->plainTextToken;
+        $token = $user->createToken('api-token')->plainTextToken;
 
-            return response()->json([
-                'user'  => $user,
-                'token' => $token,
-            ], 201);
+        return response()->json([
+            'user'  => $user,
+            'token' => $token,
+        ], 201);
 
-        } catch (ValidationException $e) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors'  => $e->errors(),
-            ], 422);
+    } catch (ValidationException $e) {
+        return response()->json([
+            'message' => 'Validation failed',
+            'errors'  => $e->errors(),
+        ], 422);
 
-        } catch (\Throwable $e) {
-            return response()->json([
-                'message' => 'Registration error',
-                'error'   => $e->getMessage(),
-            ], 500);
-        }
+    } catch (\Throwable $e) {
+        return response()->json([
+            'message' => 'Registration error',
+            'error'   => $e->getMessage(),
+        ], 500);
     }
+}
 
     /**
      * Login korisnika.
