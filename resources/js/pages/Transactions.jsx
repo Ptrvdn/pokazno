@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CustomButton from '../components/CustomButton';
 import InputField from '../components/InputField';
+import { getCurrentUser, hasRole } from '../components/ProtectedRoute';
 
 export default function Transactions() {
+    const currentUser = getCurrentUser();
+    const isAdmin = hasRole('admin');
+    
     // State za transakcije i paginaciju
     const [transactions, setTransactions] = useState([]);
     const [accounts, setAccounts] = useState([]);
@@ -60,7 +64,9 @@ export default function Transactions() {
 
     const loadAccounts = async () => {
         try {
-            const response = await axios.get('/api/accounts');
+            // Admini vide sve račune, obični korisnici samo svoje
+            const params = isAdmin ? {} : { user_id: currentUser.id };
+            const response = await axios.get('/api/accounts', { params });
             setAccounts(response.data.data || response.data);
         } catch (err) {
             console.error('Error loading accounts:', err);
@@ -69,7 +75,9 @@ export default function Transactions() {
 
     const loadCategories = async () => {
         try {
-            const response = await axios.get('/api/categories');
+            // Admini vide sve kategorije, obični korisnici samo svoje
+            const params = isAdmin ? {} : { user_id: currentUser.id };
+            const response = await axios.get('/api/categories', { params });
             setCategories(response.data.data || response.data);
         } catch (err) {
             console.error('Error loading categories:', err);
@@ -88,6 +96,18 @@ export default function Transactions() {
                     Object.entries(filters).filter(([_, value]) => value !== '')
                 )
             };
+
+            // Admin vidi sve transakcije, obični korisnici samo svoje
+            if (!isAdmin) {
+                // Filtriramo po account_id koji pripada trenutnom korisniku
+                const userAccountIds = accounts
+                    .filter(account => account.user_id === currentUser.id)
+                    .map(account => account.id);
+                
+                if (userAccountIds.length > 0) {
+                    params.account_ids = userAccountIds.join(',');
+                }
+            }
 
             const response = await axios.get('/api/transactions', { params });
             
@@ -213,7 +233,22 @@ export default function Transactions() {
 
     return (
         <div style={{ padding: '20px' }}>
-            <h1>Transactions</h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h1>
+                    {isAdmin ? 'All Transactions (Admin View)' : 'My Transactions'}
+                </h1>
+                {isAdmin && (
+                    <div style={{ 
+                        backgroundColor: '#fff3cd', 
+                        padding: '8px 12px', 
+                        borderRadius: '4px',
+                        border: '1px solid #ffeaa7',
+                        color: '#856404'
+                    }}>
+                        👑 Admin Mode: You can see all users' data
+                    </div>
+                )}
+            </div>
             
             {error && (
                 <div style={{ color: 'red', marginBottom: '15px', padding: '10px', border: '1px solid red', borderRadius: '4px' }}>
