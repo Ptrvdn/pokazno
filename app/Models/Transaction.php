@@ -9,7 +9,8 @@ class Transaction extends Model
     protected $fillable = [
         'account_id', 'category_id',
         'amount', 'description',
-        'transaction_date'
+        'transaction_date',
+         'type'
     ];
 
     public function account(): BelongsTo
