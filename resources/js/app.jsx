@@ -15,12 +15,14 @@ import ManageUsers from './pages/ManageUsers';
 
 // Components
 import Navbar from './components/Navbar';
+import Breadcrumbs from './components/Breadcrumbs';
 import { ProtectedRoute, RoleBasedRoute } from './components/ProtectedRoute';
 
 function App() {
     return (
         <Router>
             <Navbar />
+            <Breadcrumbs />
             <Routes>
                 {/* Public routes */}
                 <Route path="/" element={<Home />} />
