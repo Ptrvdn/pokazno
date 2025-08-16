@@ -43,11 +43,16 @@ export default function Navbar() {
                     Home
                 </Link>
 
-                {/* Show Transactions link only for authenticated users */}
+                {/* Show authenticated user links */}
                 {authenticated && (
-                    <Link to="/transactions" style={{ color: '#fff', textDecoration: 'none', marginRight: '15px' }}>
-                        Transactions
-                    </Link>
+                    <>
+                        <Link to="/transactions" style={{ color: '#fff', textDecoration: 'none', marginRight: '15px' }}>
+                            Transactions
+                        </Link>
+                        <Link to="/market-data" style={{ color: '#fff', textDecoration: 'none', marginRight: '15px' }}>
+                            📈 Market Data
+                        </Link>
+                    </>
                 )}
 
                 {/* Admin-only links */}

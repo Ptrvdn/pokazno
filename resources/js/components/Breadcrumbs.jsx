@@ -11,6 +11,7 @@ const Breadcrumbs = () => {
         '/': { label: 'Home', icon: '🏠' },
         '/login': { label: 'Login', icon: '🔐' },
         '/transactions': { label: 'Transactions', icon: '💰' },
+        '/market-data': { label: 'Market Data', icon: '📈' },
         '/admin': { label: 'Admin', icon: '👑' },
         '/admin/dashboard': { label: 'Dashboard', icon: '📊' },
         '/admin/users': { label: 'Manage Users', icon: '👥' },
