@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CustomButton from './CustomButton';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 const CurrencyRates = ({ showInSidebar = false }) => {
     const [rates, setRates] = useState({});
-    const [baseCurrency, setBaseCurrency] = useState('USD');
+    const [baseCurrency, setBaseCurrency] = useLocalStorage('baseCurrency', 'USD');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [lastUpdated, setLastUpdated] = useState('');
-    const [selectedCurrencies, setSelectedCurrencies] = useState(['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'RSD']);
+    const [selectedCurrencies, setSelectedCurrencies] = useLocalStorage('selectedCurrencies', ['EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'RSD']);
 
     // Popularne valute sa flagama
     const currencyInfo = {
@@ -47,20 +48,22 @@ const CurrencyRates = ({ showInSidebar = false }) => {
 
         try {
             // Koristimo besplatni ExchangeRate-API
-            const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/${baseCurrency}`);
-            
-            if (response.data && response.data.rates) {
-                setRates(response.data.rates);
-                setLastUpdated(new Date(response.data.date).toLocaleDateString('sr-RS', {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                }));
-            } else {
-                throw new Error('Invalid API response');
-            }
+            // NOVI URL sa tvojim API ključem
+        const response = await axios.get(`https://v6.exchangerate-api.com/v6/20bdf3d396a0861926ffa2a3/latest/${baseCurrency}`);
+        
+        if (response.data && response.data.conversion_rates) {
+            // Promena: conversion_rates umesto rates
+            setRates(response.data.conversion_rates);
+            setLastUpdated(new Date(response.data.time_last_update_utc).toLocaleDateString('sr-RS', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }));
+        } else {
+            throw new Error('Invalid API response');
+        }
         } catch (err) {
             console.error('Error fetching exchange rates:', err);
             setError('Failed to fetch exchange rates. Please try again later.');

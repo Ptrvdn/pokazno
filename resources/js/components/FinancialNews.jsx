@@ -27,6 +27,25 @@ const FinancialNews = ({ compact = false }) => {
             // const response = await axios.get(`https://newsapi.org/v2/top-headlines?category=${selectedCategory}&country=us&apiKey=YOUR_API_KEY`);
             
             // Mock podaci za demo (u produkciji koristiti pravi API)
+            // NOVI URL sa tvojim API ključem
+        const response = await axios.get(`https://newsapi.org/v2/top-headlines?category=${selectedCategory}&country=us&pageSize=10&apiKey=44b80aee5f8c447d9f24222410ad246b`);
+        
+        if (response.data && response.data.articles) {
+            // Filtruj artikle koji imaju sve potrebne podatke
+            const validArticles = response.data.articles.filter(article => 
+                article.title && 
+                article.description && 
+                article.urlToImage && 
+                article.source.name
+            );
+            
+            setNews(validArticles);
+        } else {
+            throw new Error('Invalid API response');
+        }
+        } catch (err) {
+            console.error('Error fetching news:', err);
+            setError('Failed to fetch financial news. Please try again later.');
             const mockNews = [
                 {
                     id: 1,
@@ -97,9 +116,6 @@ const FinancialNews = ({ compact = false }) => {
             ];
 
             setNews(mockNews);
-        } catch (err) {
-            console.error('Error fetching news:', err);
-            setError('Failed to fetch financial news. Please try again later.');
         } finally {
             setLoading(false);
         }
