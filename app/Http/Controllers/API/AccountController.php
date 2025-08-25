@@ -90,10 +90,10 @@ class AccountController extends \Illuminate\Routing\Controller
             
             // Proverava da li korisnik ima dozvolu da vidi ovaj račun
             if ($user && $user->role !== 'admin' && $account->user_id !== $user->id) {
-                return response()->json([
-                    'message' => 'Unauthorized to view this account'
-                ], 403);
-            }
+    return response()->json([
+        'message' => 'Unauthorized to view this account'
+    ], 403);
+}
             
             return response()->json($account);
         } catch (\Throwable $e) {
