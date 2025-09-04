@@ -7,6 +7,7 @@ use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\UploadController;
 use App\Http\Controllers\API\UserController;
+use App\Http\Controllers\API\AnalyticsController; // DODAJ OVO
 
 Route::prefix('api')->group(function () {
 
@@ -50,6 +51,27 @@ Route::prefix('api')->group(function () {
         // User dashboard (accessible to all authenticated users)
         Route::get('user/dashboard', function () {
             return response()->json(['message' => 'Welcome User']);
+        });
+
+        // ANALYTICS RUTE - DODAJ OVO:
+        Route::prefix('analytics')->name('analytics.')->group(function () {
+            Route::get('financial-overview', [AnalyticsController::class, 'getFinancialOverview'])
+                ->name('financial-overview');
+            
+            Route::get('monthly-trends', [AnalyticsController::class, 'getMonthlyTrends'])
+                ->name('monthly-trends');
+            
+            Route::get('user-summary-procedure', [AnalyticsController::class, 'getUserSummaryProcedure'])
+                ->name('user-summary-procedure');
+            
+            Route::post('batch-transaction-update', [AnalyticsController::class, 'batchTransactionUpdate'])
+                ->name('batch-transaction-update');
+            
+            Route::get('category-analysis', [AnalyticsController::class, 'getCategoryAnalysis'])
+                ->name('category-analysis');
+            
+            Route::get('audit-log', [AnalyticsController::class, 'getAuditLog'])
+                ->name('audit-log');
         });
     });
 
